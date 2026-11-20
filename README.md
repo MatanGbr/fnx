@@ -11,7 +11,7 @@ front-end React application
 [fnx.matang.app](https://fnx.matang.app)
 
 
-* `@fnx/api`
+* `@fnx/api`<br/>
 back-end Fastify API server 
 **` curl api.fnx.matang.app`**
 
