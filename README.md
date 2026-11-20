@@ -6,6 +6,7 @@ a project to...
 
 **Monorepo Structure**
 * `@fnx/app`
+
 front-end React application
 [fnx.matang.app](https://fnx.matang.app)
 
