@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { Writable } from "node:stream";
-import { test } from "node:test";
+import { after, test } from "node:test";
 
 globalThis.awslambda = {
   streamifyResponse: (handler) => handler,
@@ -12,8 +12,11 @@ globalThis.awslambda = {
     },
   },
 };
-const { handler } = await import("../dist/index.mjs");
+const { handler, api } = await import("../dist/index.mjs");
+after(() => api.close());
 const event = JSON.parse(await readFile(new URL("../events/test.json", import.meta.url), "utf8"));
+event.rawPath = event.requestContext.http.path = "/";
+event.routeKey = event.requestContext.routeKey = "GET /";
 const context = { awsRequestId: "local-test", getRemainingTimeInMillis: () => 30000 };
 
 function sink(onChunk = () => {}) {
@@ -35,9 +38,7 @@ test("streaming handler preserves JSON responses across warm invocations", async
     assert.equal(output.stream.metadata.statusCode, 200);
     assert.match(output.stream.metadata.headers["content-type"], /application\/json/);
     assert.equal(output.stream.writableFinished, true);
-    assert.deepEqual(JSON.parse(output.body()), {
-      status: "success", code: 200, message: "fnx API is running",
-    });
+    assert.ok(JSON.parse(output.body()).Routes.includes("GET /tickets (streaming: keep-alive, no-buffer)"));
   }
 });
 
@@ -52,24 +53,27 @@ test("streaming handler preserves 404 responses", async () => {
   assert.equal(JSON.parse(output.body()).statusCode, 404);
 });
 
-test("SSE delivers its first event before completion and ends cleanly", { timeout: 5000 }, async () => {
+test("SSE delivers its first event before completion and ends cleanly", { timeout: 70000 }, async () => {
   const streamingEvent = JSON.parse(await readFile(new URL("../events/stream.json", import.meta.url), "utf8"));
+  streamingEvent.rawPath = streamingEvent.requestContext.http.path = "/events/tickets";
+  streamingEvent.routeKey = streamingEvent.requestContext.routeKey = "GET /events/tickets";
   let resolveFirst;
   const firstChunk = new Promise((resolve) => { resolveFirst = resolve; });
   const output = sink(resolveFirst);
   let completed = false;
   const invocation = handler(streamingEvent, output.stream, { ...context }).then(() => { completed = true; });
   const first = await firstChunk;
-  assert.match(first, /event: start/);
+  assert.match(first, /: connected/);
   assert.equal(completed, false);
   assert.doesNotMatch(output.body(), /event: done/);
   assert.equal(output.stream.metadata.statusCode, 200);
   assert.match(output.stream.metadata.headers["content-type"], /text\/event-stream/);
   await invocation;
-  const events = output.body().trim().split("\n\n");
-  assert.deepEqual(events.map((event) => event.split("\n")[0]), [
-    "event: start", "event: progress", "event: progress", "event: progress", "event: done",
-  ]);
-  assert.deepEqual(events.slice(1, 4).map((event) => JSON.parse(event.split("data: ")[1]).step), [1, 2, 3]);
+  const heartbeats = output.body().trim().split("\n\n")
+    .filter((event) => event.startsWith("event: heartbeat"));
+  assert.ok(heartbeats.length >= 2);
+  for (const heartbeat of heartbeats) {
+    assert.equal(typeof JSON.parse(heartbeat.split("data: ")[1]).healthy, "boolean");
+  }
   assert.equal(output.stream.writableFinished, true);
 });

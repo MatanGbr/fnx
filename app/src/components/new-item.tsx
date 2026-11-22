@@ -80,7 +80,7 @@ export const NewItem = () => {
             );
             if (controller.signal.aborted) return;
             reset();
-            applyFilters({ search: "", status: "" });
+            applyFilters({ ...useTicketsFilter.getState().filters, search: "", status: "" });
             setSuccess(`פנייה ${data.id} נוצרה בהצלחה.`);
         } catch (cause) {
             if (controller.signal.aborted) return;
@@ -102,7 +102,7 @@ export const NewItem = () => {
     return (
         <Card>
             <form className={clsx(styles["new-ticket-form"], resetting && styles["is-resetting"])} onSubmit={createTicket} noValidate aria-busy={submitting}>
-                <Title>פנייה חדשה</Title>
+                <Title startLevel={2}>פנייה חדשה</Title>
                 <label htmlFor={`${id}-title`}>כותרת</label>
                 <Input id={`${id}-title`} ref={titleInput} value={title} required readOnly={resetting} disabled={submitting}
                     aria-invalid={Boolean(errors.title)} aria-describedby={errors.title ? `${id}-title-error` : undefined}

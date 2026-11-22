@@ -69,6 +69,12 @@ export const Filter = () => {
                         </svg>
                     </Button>}
                 </div>
+                <Button type="button" className={styles.fuzzy}
+                    aria-label="חיפוש מקורב" aria-pressed={draft.fuzzy}
+                    title={draft.fuzzy ? "חיפוש מקורב פעיל — לחצו לכיבוי" : "חיפוש מקורב כבוי — לחצו להפעלה"}
+                    onClick={() => setDraft((current) => ({ ...current, fuzzy: !current.fuzzy }))}>
+                    <span aria-hidden="true">≈</span>
+                </Button>
                 <Select className={styles.status} aria-label="סינון לפי סטטוס" value={draft.status}
                     onValueChange={(value) => setDraft({ ...draft, status: value as Filters["status"] })}>
                     <option value="">כל הסטטוסים</option>

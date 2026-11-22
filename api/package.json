@@ -4,7 +4,7 @@
     "type": "module",
     "main": "src/index.ts",
     "scripts": {
-        "dev": "node --watch --inspect src/server.ts",
+        "dev": "node --env-file-if-exists=../.env --watch --inspect src/server.ts",
         "build": "node scripts/build.mjs",
         "package": "npm run build && cd dist && zip -FS lambda.zip index.mjs",
         "test": "npm run build && node --test test/*.test.mjs"

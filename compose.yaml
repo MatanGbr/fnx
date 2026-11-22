@@ -22,16 +22,17 @@ services:
       context: .
       dockerfile: api/Dockerfile
     environment:
-      PGHOST: db
-      PGPORT: 5432
-      PGDATABASE: fnx
-      PGUSER: fnx
-      PGPASSWORD: ${FNX_DB_PASSWORD:-fnx-local}
+      LOCAL_DB: ${LOCAL_DB:-false}
+      FNX_DB_LOCAL_HOST: db
+      FNX_DB_PORT: 5432
+      FNX_DB_PASSWORD: ${FNX_DB_PASSWORD:-fnx-local}
+      PGHOST: ${PGHOST:-}
+      PGPORT: ${PGPORT:-}
+      PGDATABASE: ${PGDATABASE:-fnx}
+      PGUSER: ${PGUSER:-fnx}
+      PGPASSWORD: ${PGPASSWORD:-}
     ports:
       - "127.0.0.1:3000:3000"
-    depends_on:
-      db:
-        condition: service_healthy
 
 volumes:
   postgres_data:

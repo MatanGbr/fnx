@@ -1,16 +1,18 @@
 import { createContext, useContext, ReactNode, Children } from "react";
 import styles from "../../styles/title.module.scss";
-import clsx from "clsx";
 
-const Context = createContext(0);
+type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-
-export const Title = ({ children, autoNest = true }: { children: ReactNode, autoNest?: boolean }) => {
+const Context = createContext(1);
 
 
-    const depth = useContext(Context);
-  const Tag = depth === 0 ? "h1" : "h2";
-  const nextDepth = autoNest ? depth + 1 : depth;
+export const Title = ({ children, autoNest = true, startLevel }: { children: ReactNode, autoNest?: boolean, startLevel?: HeadingLevel }) => {
+
+
+  const inheritedLevel = useContext(Context);
+  const level = startLevel ?? inheritedLevel;
+  const Tag = `h${level}` as `h${HeadingLevel}`;
+  const nextDepth = autoNest ? Math.min(level + 1, 6) : level;
 
   return (
     <Context.Provider value={nextDepth}>

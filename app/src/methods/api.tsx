@@ -4,14 +4,15 @@ export type { TicketStatusEvent } from "../validation";
 import { CLIENT_REQUEST_TIMEOUT_MS, TIMEOUT_MESSAGE } from "../../../shared/timeouts";
 export { WRITE_TIMEOUT_MESSAGE } from "../../../shared/timeouts";
 
+const localApi = import.meta.env.LOCAL_API === "true";
 const baseUrl = import.meta.env.VITE_API_URL
-    ?? (import.meta.env.PROD ? "https://api.fnx.matang.app" : "http://localhost:3000");
+    || (localApi ? "http://localhost:3000" : "https://api.fnx.matang.app");
 
 type Options = {
     stream?: boolean;
     timeoutMs?: number;
     signal?: AbortSignal;
-    params?: Record<string, string | number>;
+    params?: Record<string, string | number | boolean>;
 };
 
 type Get = {

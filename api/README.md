@@ -14,55 +14,96 @@ role cannot create or alter objects, drop tables or databases, truncate tables,
 grant access, or assume an administrative role. Schema changes require an
 administrator; these restrictions are separate from the local Docker setup.
 
-`ssh fnx@pg.matang.app` opens a confined psql session; a command such as
-`ssh fnx@pg.matang.app '\dt'` runs directly. Shell escapes, program pipes, and
-writing files from that session are blocked.
+`ssh fnx@pg.matang.app` opens a confined psql session. Run commands inside
+that session; commands passed after the SSH address are ignored. Shell
+escapes, program pipes, and writing files from that session are blocked.
 
-Run `npm run dev --workspace=api` to use this database. `PGHOST`, `PGPORT`,
-`PGDATABASE`, `PGUSER`, and `PGPASSWORD` can override the defaults; the Docker
-Compose configuration continues to use its local database. Remove any old
-PostgreSQL environment overrides when deploying against the shared database.
+## Environment selection
 
-The server certificate is valid for one year from November 22, 2026. Renew it
-on the server and update `src/db-certificate.ts` together before it expires.
-The certificate is public; its private key stays on EC2.
+Set `LOCAL_API=true` to have the frontend call `http://localhost:3000` instead
+of `https://api.fnx.matang.app`. Set `LOCAL_DB=true` to have the API connect to
+a local database instead of production. These flags are independent, and only
+the exact value `true` enables local services. Unset or `false` uses production,
+including in Docker Compose.
 
-Frontend production builds use `https://api.fnx.matang.app`; development uses
-`http://localhost:3000`. `VITE_API_URL` overrides either default.
+```sh
+export LOCAL_API=true
+npm run dev
+```
+
+For a local database too, run these before starting development:
+
+```sh
+export LOCAL_DB=true
+docker compose up -d --wait db
+```
+
+You can also put the flags in `.env` at the repository root (see `.env.example`).
+Regular development and Compose both read it; shell variables take precedence.
+Restart dev servers after changes. `LOCAL_API` is embedded in frontend builds,
+so rebuild to change a deployed frontend's target.
+
+`VITE_API_URL` overrides the API URL for requests and SSE. `PGHOST`, `PGPORT`,
+`PGDATABASE`, `PGUSER`, and `PGPASSWORD` override database defaults; empty values
+are treated as unset. Remove stale overrides when switching targets. Queries
+and the notification listener share the same database configuration.
+
+The local database defaults to `127.0.0.1:5433`, database/user `fnx`, and password
+`fnx-local`. `FNX_DB_PORT` and `FNX_DB_PASSWORD` customize the local Compose
+database's host port and password. Compose connects its API to `db:5432`.
+Never put secrets in `VITE_*` variables, which are public frontend values.
+
+For a built standalone API, load the file from the repository root with
+`node --env-file=.env api/dist/server.mjs`.
+
+The production database certificate is valid for one year from November 22,
+2026. Renew it on the server and update `src/db-certificate.ts` together before
+it expires. The certificate is public; its private key stays on EC2.
 
 ## Docker
 
 For a database preloaded with the existing tables and all 25 tickets, run
-`docker compose up -d --wait db` from the repository root. To include the API,
-run `docker compose --profile api up -d --build --wait`.
-See [database setup](sql/README.md) for connection details and the equivalent
-plain-SQL installation on your own PostgreSQL server.
+`docker compose up -d --wait db` from the repository root. Start it before the
+local API so PostgreSQL is ready:
 
-Build from the repository root (the API uses the shared workspace):
+```sh
+docker compose up -d --wait db
+LOCAL_DB=true docker compose --profile api up -d --build --wait api
+```
+
+For a containerized API using the production database (no local DB required):
+
+```sh
+LOCAL_DB=false docker compose --profile api up -d --build --wait api
+```
+
+The API is available at `http://localhost:3000`. See
+[database setup](sql/README.md) for plain-SQL installation and connection details.
+
+Build and run without Compose from the repository root:
 
 ```sh
 docker build -f api/Dockerfile -t fnx-api .
-docker run --rm -p 3000:3000 \
-  -e PGHOST=host.docker.internal \
-  -e PGDATABASE=fnx -e PGUSER=matan \
-  fnx-api
+# Production database:
+docker run --rm -p 3000:3000 -e LOCAL_DB=false fnx-api
+# Local database published on the host by Compose:
+docker run --rm -p 3000:3000 -e LOCAL_DB=true \
+  -e FNX_DB_LOCAL_HOST=host.docker.internal fnx-api
 ```
 
-`host.docker.internal` reaches the host database on Docker Desktop. On Linux,
-add `--add-host=host.docker.internal:host-gateway`, or set `PGHOST` to a reachable
-database hostname. PostgreSQL must accept connections from the container.
-Set `PGPORT` (default `5432`) and `PGPASSWORD` when required; pass secrets at
-runtime, for example with `--env-file`. `PORT` defaults to `3000`; update the
-container port mapping if you override it.
-
-The image runs the bundled HTTP server as a non-root user. Build tools and source
-files stay in the build stage. The existing Lambda bundle remains available at
-`api/dist/index.mjs` when building locally.
+`host.docker.internal` reaches the host on Docker Desktop. On Linux, add
+`--add-host=host.docker.internal:host-gateway`. Pass custom passwords and other
+overrides at runtime with `-e` or `--env-file .env`. `PORT` defaults to `3000`;
+update the container port mapping if overridden. The image runs the bundled
+HTTP server as a non-root user. The Lambda bundle remains at `api/dist/index.mjs`.
 
 ## Search
 
 Ticket title searches use Fuse.js for typo-tolerant matching, ranked by relevance
-before pagination. The status filter applies before matching. Empty searches
+before pagination by default (`fuzzy=true`). Set `fuzzy=false` on `GET /tickets`
+for case-insensitive literal substring matching in newest-first order; typos are
+not expanded and characters such as `%` and `_` are literal. Other values for
+`fuzzy` are rejected. The status filter applies before matching. Empty searches
 retain newest-first SQL pagination. Nonempty searches load all tickets matching
 the status filter into API memory, so search cost grows with the dataset.
 
@@ -100,13 +141,13 @@ Run locally from the repository root:
 
 ```sh
 npm run dev --workspace=api
-curl http://localhost:3000/test
-curl -N http://localhost:3000/test/stream
+curl http://localhost:3000/
+curl -N http://localhost:3000/events/tickets
 ```
 
-`GET /test` returns JSON. `GET /test/stream` returns Server-Sent Events (SSE):
-`start`, three `progress` events spaced 500 ms apart, then `done` and EOF.
-Clients using `EventSource` should call `close()` on `done` to avoid reconnecting.
+`GET /` returns the route list as JSON. `GET /events/tickets` streams ticket
+updates and health heartbeats for up to 60 seconds. Clients reconnect when
+the stream ends.
 
 ## Lambda
 
@@ -125,7 +166,7 @@ npm run package --workspace=api
 Upload `api/dist/lambda.zip` to a Node.js 22.x or newer Lambda function and
 set its handler to **`index.handler`**. The archive contains `index.mjs`
 at its root, with dependencies bundled. Set the function timeout to at least
-10 seconds for the demo (allowing for cold starts).
+70 seconds to accommodate the ticket event stream.
 
 The build emits ESM and adds a `createRequire(import.meta.url)` shim for bundled
 CommonJS dependencies that load Node built-ins. Renaming a CommonJS bundle to
@@ -147,20 +188,15 @@ streaming; an existing buffered integration will not deliver incremental chunks.
 Verify through your deployed endpoint (include authentication if required):
 
 ```sh
-curl -N https://YOUR_FUNCTION_URL/test/stream
+curl -N https://YOUR_FUNCTION_URL/events/tickets
 ```
 
 Use `events/test.json` for a JSON smoke invocation and `events/stream.json` for the
-SSE route. A Lambda console test can exercise the route, but use the streaming
+SSE route, setting the event paths and route keys to `/` and `/events/tickets`,
+respectively. A Lambda console test can exercise the route, but use the streaming
 Function URL or `InvokeWithResponseStream` to verify incremental delivery.
 The streaming handler writes response bytes, rather than returning the old
 `{statusCode, body}` proxy envelope.
-
-The `/test` response body remains:
-
-```json
-{"status":"success","code":200,"message":"fnx API is running"}
-```
 
 Run the bundled-handler tests:
 
@@ -169,12 +205,12 @@ npm test --workspace=api
 ```
 
 Tests use a small AWS runtime shim and the real bundled adapter/routes. They check
-JSON responses, warm invocations, 404s, incremental SSE delivery, event order, and
+JSON responses, warm invocations, 404s, incremental SSE delivery, heartbeats, and
 clean stream completion. AWS transport and URL configuration require a deployed test.
 
 Streams are bounded by the function and integration timeouts. A client disconnect
 at AWS's edge does not automatically stop Lambda execution. Keep streaming jobs
-bounded; the demo completes after approximately 1.5 seconds.
+bounded; ticket streams close after 60 seconds.
 
 The existing authentication routes are unfinished and still require their
 database and authentication implementation before use.

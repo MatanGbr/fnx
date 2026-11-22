@@ -2,6 +2,7 @@ import awsLambdaFastify from "@fastify/aws-lambda";
 import { pipeline } from "node:stream/promises";
 import type { Writable } from "node:stream";
 import { api } from "./index.ts";
+export { api };
 
 const proxy = awsLambdaFastify(api, { payloadAsStream: true });
 

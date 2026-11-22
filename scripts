@@ -1,7 +1,0 @@
-
-deployoing
-
-front
-vite build app && aws s3 cp app/dist s3://eu.fnx/app --recursive
-
-back

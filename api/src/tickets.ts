@@ -54,7 +54,7 @@ export const ticketsRoutes: FastifyPluginAsync =
                 return rep.status(400).er(query.error.flatten());
             }
 
-            const { page, pageSize, search, status } = query.data;
+            const { page, pageSize, search, status, fuzzy } = query.data;
             const offset = (page - 1) * pageSize;
 
             const params = [status ?? null];
@@ -69,13 +69,14 @@ export const ticketsRoutes: FastifyPluginAsync =
                      ORDER BY created_at DESC, id DESC`,
                     params,
                 );
-                const matches = new Fuse(rows, {
+                const matches = fuzzy ? new Fuse(rows, {
                     keys: ["title"],
                     threshold: 0.35,
                     ignoreLocation: true,
-                }).search(search);
+                }).search(search).map(({ item }) => item)
+                    : rows.filter(({ title }) => title.toLowerCase().includes(search.toLowerCase()));
                 total = matches.length;
-                items = matches.slice(offset, offset + pageSize).map(({ item }) => item);
+                items = matches.slice(offset, offset + pageSize);
             } else {
                 const [itemsResult, countResult] = await Promise.all([
                     pg.query<Ticket>(

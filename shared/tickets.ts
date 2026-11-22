@@ -18,6 +18,10 @@ export const ticketsQuerySchema = z.object({
     page: z.coerce.number().int().min(1).max(Number.MAX_SAFE_INTEGER / 10).default(1),
     pageSize: z.coerce.number().int().min(10).max(10).default(10),
     search: z.string().trim().default(""),
+    fuzzy: z.preprocess(
+        (value) => value === "true" ? true : value === "false" ? false : value,
+        z.boolean().default(true),
+    ),
     status: z.preprocess(
         (value) => value === "" ? undefined : value,
         ticketStatusSchema.optional(),

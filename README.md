@@ -1,5 +1,3 @@
-
-
 ## matangbr/fnx
 
 **מערכת לדוגמה לניהול פניות**
@@ -22,12 +20,41 @@
 <br/> **` ssh fnx@pg.matang.app `**
 
 **Run it yourself!**
-```
+
+```sh
 git clone https://github.com/MatanGbr/fnx.git &&
 cd fnx &&
+export LOCAL_API=true &&
 npm install &&
 npm run dev
 ```
+
+`LOCAL_API=true` makes the frontend use `http://localhost:3000`. Otherwise it
+uses the production API. The local API uses the production database by default.
+
+If you also want a local database, run these before `npm run dev`:
+
+```sh
+export LOCAL_DB=true
+docker compose up -d --wait db
+```
+
+To run the API in a container instead of `npm run dev:api`:
+
+```sh
+docker compose --profile api up -d --build --wait api
+npm run dev:app
+```
+
+The container also respects `LOCAL_DB=true`; otherwise it uses production.
+Both flags accept the exact value `true` to enable local services. Set them to
+`false` or unset them to use production. You can also put them in a root `.env`
+file. Restart dev servers after changing them; rebuild the frontend when
+changing `LOCAL_API` for a production build.
+
+See [API environment configuration](api/README.md#environment-selection) for
+custom API URLs, database credentials, and standalone Docker commands.
+
 **Worth knowing**
 
 

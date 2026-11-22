@@ -36,6 +36,13 @@ test("fuzzy title search ranks matches before pagination and respects status", a
         const typo = await search({ search: "תקלה במחשהב", status: "open" });
         assert.ok(typo.items.some(({ id }) => id === 12));
         assert.ok(typo.items.every(({ status }) => status === "open"));
+        const literalTypo = await search({ search: "תקלה במחשהב", status: "open", fuzzy: "false" });
+        assert.equal(literalTypo.pagination.total, 0);
+        const literal = await search({ search: "במחשב", status: "open", fuzzy: "false", page: "2" });
+        assert.deepEqual(literal.items.map(({ id }) => id), [2, 1, 13]);
+        assert.equal(literal.pagination.total, 13);
+        const explicitFuzzy = await search({ search: "תקלה במחשהב", status: "open", fuzzy: "true" });
+        assert.deepEqual(explicitFuzzy, typo);
         const closed = await search({ search: "תקלה במחשב", status: "closed" });
         assert.deepEqual(closed.items.map(({ id }) => id), [15]);
         const missing = await search({ search: "zzzzzzzz" });
@@ -44,6 +51,13 @@ test("fuzzy title search ranks matches before pagination and respects status", a
         const empty = await search({ search: "   ", status: "open", page: "2" });
         assert.deepEqual(empty.items.map(({ id }) => id), [2, 1, 13, 14]);
         assert.equal(empty.pagination.total, 14);
+        rows.push({ ...rows[0], id: 16, title: "Fix 100%_Done" });
+        const caseInsensitive = await search({ search: "fix 100%_done", fuzzy: "false" });
+        assert.deepEqual(caseInsensitive.items.map(({ id }) => id), [16]);
+        const wildcard = await search({ search: "%_", fuzzy: "false" });
+        assert.deepEqual(wildcard.items.map(({ id }) => id), [16]);
+        const literalClosed = await search({ search: "במחשב", status: "closed", fuzzy: "false" });
+        assert.deepEqual(literalClosed.items.map(({ id }) => id), [15]);
     } finally {
         pg.query = originalQuery;
         await app.close();

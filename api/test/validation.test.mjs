@@ -17,7 +17,7 @@ const cases = {
     ],
     ticketParamsSchema: [{ id: "1" }, { id: "2147483647" }, { id: "0" }, { id: "2147483648" }, { id: "1.5" }, { id: "no" }, {}],
     updateTicketSchema: [{ status: "open" }, { status: "in_progress" }, { status: "closed" }, { status: "other" }, {}, { status: "open", extra: true }],
-    ticketsQuerySchema: [{}, { page: "2", pageSize: "10", search: "  abc  ", status: "" }, { status: "closed" }, { page: "0" }, { page: "1.5" }, { pageSize: "11" }, { status: "other" }, { page: "Infinity" }],
+    ticketsQuerySchema: [{ fuzzy: "true" }, { fuzzy: "false" }, { fuzzy: false }, { fuzzy: "invalid" }, {}, { page: "2", pageSize: "10", search: "  abc  ", status: "" }, { status: "closed" }, { page: "0" }, { page: "1.5" }, { pageSize: "11" }, { status: "other" }, { page: "Infinity" }],
     ticketNotificationSchema: [
         { type: "ticket-status-changed", id: 1, previousStatus: "open", status: "closed" },
         { type: "ticket-status-changed", id: 1, previousStatus: "bad", status: "closed" },
@@ -36,7 +36,7 @@ test("backend schemas are eagerly compiled and preserve shared validation result
         for (const input of inputs) assert.deepEqual(result(compiled[name], input), result(shared[name], input), name);
     }
     assert.deepEqual(shared.newTicketSchema.parse({ title: "  abc  " }), { title: "abc", description: "" });
-    assert.deepEqual(shared.ticketsQuerySchema.parse({ status: "" }), { page: 1, pageSize: 10, search: "", status: undefined });
+    assert.deepEqual(shared.ticketsQuerySchema.parse({ status: "" }), { page: 1, pageSize: 10, search: "", fuzzy: true, status: undefined });
 });
 
 test("frontend compiles lazily once and agrees with backend schemas", async () => {
@@ -84,6 +84,7 @@ test("routes reject invalid requests before DB access and pass normalized inputs
             ["GET", "/tickets?page=0"],
             ["GET", "/tickets?pageSize=11"],
             ["GET", "/tickets?status=bad"],
+            ["GET", "/tickets?fuzzy=invalid"],
         ];
         for (const [method, url, payload] of invalid) {
             const response = await app.inject({ method, url, ...(payload ? { payload } : {}) });

@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import type { TicketStatus } from "../validation";
 export type { TicketStatus } from "../validation";
-export type Filters = { search: string; status: TicketStatus | "" };
+export type Filters = { search: string; fuzzy: boolean; status: TicketStatus | "" };
 type Store = {
     filters: Filters;
     page: number;
@@ -13,7 +13,7 @@ type Store = {
 
 export const useTicketsFilter = create<Store>()(persist(
     (set) => ({
-        filters: { search: "", status: "" },
+        filters: { search: "", status: "", fuzzy: true },
         page: 1,
         applyFilters: (filters) => set({
             filters: { ...filters, search: filters.search.trim() }, page: 1,
@@ -23,6 +23,10 @@ export const useTicketsFilter = create<Store>()(persist(
     {
         name: "tickets-filters",
         storage: createJSONStorage(() => localStorage),
+        merge: (persisted, current) => ({
+            ...current,
+            filters: { ...current.filters, ...(persisted as Partial<Store>)?.filters },
+        }),
         partialize: ({ filters }) => ({ filters }),
     },
 ));

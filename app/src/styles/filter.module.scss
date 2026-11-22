@@ -7,6 +7,7 @@
     > .search-field { flex: 1 1 320px; }
     > .status { flex: 0 1 180px; }
     > button { flex: 0 0 110px; }
+    > button.fuzzy { flex: 0 0 36px; }
 }
 
 @media (max-width: 700px) {
@@ -21,14 +22,11 @@
 .search-field {
     position: relative;
     min-width: 0;
-    input { padding-inline-end: 40px; }
+    input { padding-inline-end: 38px; }
     &.is-clearing input { animation: search-clear 160ms ease-out forwards; }
 }
+button.fuzzy,
 button.search-field__clear {
-    position: absolute;
-    inset-inline-end: 5px;
-    top: 50%;
-    transform: translateY(-50%);
     display: inline-flex;
     min-height: 28px;
     width: 28px;
@@ -39,6 +37,19 @@ button.search-field__clear {
     > svg { display: block; }
     &:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
     &:active:not(:disabled) { background: var(--accent-soft-active); color: var(--accent-active); }
+}
+button.search-field__clear {
+    position: absolute;
+    inset-inline-end: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+button.fuzzy {
+    min-height: 36px;
+    font-size: 23px;
+    line-height: 1;
+    &[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+    &[aria-pressed="false"] { border: 1px solid #cbd5e1; }
 }
 @keyframes search-clear {
     from { color: #0f172a; }
