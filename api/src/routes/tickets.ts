@@ -1,10 +1,10 @@
 
 import Fuse from "fuse.js";
-import type { Ticket } from "../../shared/tickets.ts";
+import type { Ticket } from "../../../shared/tickets.ts";
 import { PassThrough } from "node:stream";
-import { newTicketSchema, ticketParamsSchema, updateTicketSchema, ticketsQuerySchema } from "./validation.ts";
+import { newTicketSchema, ticketParamsSchema, updateTicketSchema, ticketsQuerySchema } from "../validation.ts";
 import type { FastifyPluginAsync } from "fastify";
-import { pg } from "./db.ts";
+import { pg } from "../db.ts";
 
 export const ticketsRoutes: FastifyPluginAsync =
     async (api) => {

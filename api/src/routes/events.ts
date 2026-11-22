@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { PassThrough } from "node:stream";
-import { startTicketListener } from "./ticket-listener.ts";
+import { startTicketListener } from "../ticket-listener.ts";
 
 export const ticketEventsRoutes: FastifyPluginAsync = async (api) => {
     const clients = new Set<PassThrough>();

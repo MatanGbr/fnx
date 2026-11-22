@@ -7,23 +7,14 @@ import { z, object as schema } from "zod";
 import { setTimeout as delay } from "node:timers/promises";
 
 import { randomBytes } from "node:crypto";
-import { ticketsRoutes } from "./tickets.ts";
-import { ticketEventsRoutes } from "./events.ts";
+import { registerRootRoute } from "./routes/root.ts";
+import { ticketsRoutes } from "./routes/tickets.ts";
+import { ticketEventsRoutes } from "./routes/events.ts";
 import { registerTimeoutErrors } from "./timeouts.ts";
 import { API_REQUEST_TIMEOUT_MS } from "../../shared/timeouts.ts";
 
 export const api = FastifyClient({ logger: true, handlerTimeout: API_REQUEST_TIMEOUT_MS, requestTimeout: 20_000 })
-const routes = new Set<string>();
-api.addHook("onRoute", (route) => {
-    const methods = Array.isArray(route.method) ? route.method : [route.method];
-    for (const method of methods) {
-        const streaming = route.config?.streaming && method !== "HEAD"
-            ? " (streaming: keep-alive, no-buffer)"
-            : "";
-        routes.add(`${method} ${route.url}${streaming}`);
-    }
-});
-api.get("/", async () => ({ Routes: [...routes].sort() }));
+registerRootRoute(api);
 registerTimeoutErrors(api);
 
 api.register(cors, { methods: ["GET", "HEAD", "POST", "PATCH", "OPTIONS"] });
