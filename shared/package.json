@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "type": "module",
+    "name": "@fnx/shared",
+    "version": "1.0.0",
+    "dependencies": {
+        "zod": "^4.6.7"
+    }
+}

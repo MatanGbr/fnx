@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx", 
+    "target": "ESNext", 
+    "lib": ["ESNext", "DOM"], 
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": ["node"],
+    "module": "esnext", 
+    "moduleResolution": "bundler", 
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
+  }
+}

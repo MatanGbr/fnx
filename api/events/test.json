@@ -1,0 +1,29 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /test",
+  "rawPath": "/test",
+  "rawQueryString": "",
+  "headers": {
+    "host": "localhost",
+    "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "local",
+    "domainName": "localhost",
+    "domainPrefix": "local",
+    "http": {
+      "method": "GET",
+      "path": "/test",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "lambda-console-test"
+    },
+    "requestId": "local-test",
+    "routeKey": "GET /test",
+    "stage": "$default",
+    "time": "21/Nov/2026:00:00:00 +0000",
+    "timeEpoch": 1795219200000
+  },
+  "isBase64Encoded": false
+}

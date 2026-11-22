@@ -1,0 +1,21 @@
+{
+    "name": "fnx",
+    "workspaces": [
+        "app",
+        "api",
+        "shared"
+    ],
+    "repository": "https://github.com/MatanGbr/fnx",
+    "scripts": {
+        "dev": "concurrently npm:dev:api npm:dev:app",
+        "dev:api": "npm run dev --workspace=api",
+        "dev:app": "npm run dev --workspace=app"
+    },
+    "dependencies": {
+        "@fnx/api": "*",
+        "@fnx/app": "*"
+    },
+    "devDependencies": {
+        "concurrently": "^10.0.7"
+    }
+}

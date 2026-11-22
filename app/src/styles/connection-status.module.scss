@@ -1,0 +1,7 @@
+.connection-status {
+    color: #475569;
+    > div { display: flex; align-items: center; gap: 0.6rem; }
+    &__dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    &--connected { color: #166534; }
+    &--offline, &--unavailable { color: #9a3412; }
+}

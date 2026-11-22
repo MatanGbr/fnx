@@ -1,0 +1,54 @@
+.tickets-workspace.tickets-workspace {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tickets-split {
+    display: grid;
+    flex: 1;
+    gap: 8px;
+    min-width: 0;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+
+    &.is-resizing {
+        cursor: col-resize;
+        user-select: none;
+    }
+}
+
+.new-ticket-panel {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+
+    > div { box-sizing: border-box; min-height: 100%; }
+    form { width: 100%; min-width: 0; }
+    input, textarea { box-sizing: border-box; width: 100%; min-width: 0; }
+}
+
+.tickets-divider {
+    cursor: col-resize;
+    touch-action: none;
+    user-select: none;
+    border-radius: 4px;
+    background: linear-gradient(to right, transparent 3px, #d1d5db 3px, #d1d5db 5px, transparent 5px);
+
+    &:hover, &:focus-visible, .is-resizing & { background: #94a3b8; }
+    &:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+}
+
+@media (max-width: 700px) {
+    .tickets-split {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .tickets-divider { display: none; }
+    .new-ticket-panel { flex-shrink: 0; max-height: 30%; }
+}
