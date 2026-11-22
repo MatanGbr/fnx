@@ -31,7 +31,7 @@ npm run dev
 **Worth knowing**
 
 
-The system displays tickets streamed into it upon launch, creating a new ticket, or using the search bar (which can filter the results by status). The search bar enables keyboard-only usage (`Tab` focuses, `Esc` cleans, and `Enter` submits) and saves your last search query locally (just like it saves your unfinished ticket values if you accidently closed the tab). 
+The system displays tickets streamed into it upon launch, creating a new ticket, or using the search bar (which can filter the results by status). The search bar enables keyboard-only usage (`Tab` focuses, `Esc` cleans, and `Enter` submits) and saves your last search query locally (just like it saves your unfinished ticket values if you accidently closed the tab). It can even tolerate typos thanks to Fuse.js
 
 In the main dataset, a change in "status" triggers an immidiete API call that updates the database, which in turn, triggers a browser event that dynamically updates all of the open systems with the new value (hence the connection indicator).
 

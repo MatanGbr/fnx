@@ -1,4 +1,6 @@
 
+import Fuse from "fuse.js";
+import type { Ticket } from "../../shared/tickets.ts";
 import { PassThrough } from "node:stream";
 import { newTicketSchema, ticketParamsSchema, updateTicketSchema, ticketsQuerySchema } from "./validation.ts";
 import type { FastifyPluginAsync } from "fastify";
@@ -55,42 +57,42 @@ export const ticketsRoutes: FastifyPluginAsync =
             const { page, pageSize, search, status } = query.data;
             const offset = (page - 1) * pageSize;
 
-            const where = `
-        WHERE ($1::text IS NULL OR title ILIKE $1 ESCAPE '!')
-          AND ($2::text IS NULL OR status = $2)
-    `;
+            const params = [status ?? null];
+            const where = "WHERE ($1::text IS NULL OR status = $1)";
+            let items: Ticket[];
+            let total: number;
 
-            const params = [
-                search
-                    ? `%${search.replace(/[!%_]/g, (char) => `!${char}`)}%`
-                    : null,
-                status ?? null,
-            ];
-
-            const [itemsResult, countResult] = await Promise.all([
-                pg.query(
-                    `
-                SELECT id, title, description, status, created_at
-                FROM tickets
-                ${where}
-                ORDER BY created_at DESC, id DESC
-                LIMIT $3 OFFSET $4
-            `,
-                    [...params, pageSize, offset]
-                ),
-
-                pg.query<{ total: number }>(
-                    `
-                SELECT COUNT(*)::int AS total
-                FROM tickets
-                ${where}
-            `,
-                    params
-                ),
-            ]);
-
-            const items = itemsResult.rows;
-            const total = countResult.rows[0].total;
+            if (search) {
+                const { rows } = await pg.query<Ticket>(
+                    `SELECT id, title, description, status, created_at
+                     FROM tickets ${where}
+                     ORDER BY created_at DESC, id DESC`,
+                    params,
+                );
+                const matches = new Fuse(rows, {
+                    keys: ["title"],
+                    threshold: 0.35,
+                    ignoreLocation: true,
+                }).search(search);
+                total = matches.length;
+                items = matches.slice(offset, offset + pageSize).map(({ item }) => item);
+            } else {
+                const [itemsResult, countResult] = await Promise.all([
+                    pg.query<Ticket>(
+                        `SELECT id, title, description, status, created_at
+                         FROM tickets ${where}
+                         ORDER BY created_at DESC, id DESC
+                         LIMIT $2 OFFSET $3`,
+                        [...params, pageSize, offset],
+                    ),
+                    pg.query<{ total: number }>(
+                        `SELECT COUNT(*)::int AS total FROM tickets ${where}`,
+                        params,
+                    ),
+                ]);
+                items = itemsResult.rows;
+                total = countResult.rows[0].total;
+            }
 
             const pagination = {
                 page,

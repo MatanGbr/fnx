@@ -59,6 +59,13 @@ The image runs the bundled HTTP server as a non-root user. Build tools and sourc
 files stay in the build stage. The existing Lambda bundle remains available at
 `api/dist/index.mjs` when building locally.
 
+## Search
+
+Ticket title searches use Fuse.js for typo-tolerant matching, ranked by relevance
+before pagination. The status filter applies before matching. Empty searches
+retain newest-first SQL pagination. Nonempty searches load all tickets matching
+the status filter into API memory, so search cost grows with the dataset.
+
 ## Request deadlines
 
 Timeout defaults live in `shared/timeouts.ts`:
