@@ -1,5 +1,3 @@
--- PostgreSQL bootstrap: run once in a database without public.tickets.
--- Deliberately fail on existing tables instead of replacing existing data.
 BEGIN;
 
 CREATE TABLE public.tickets (

@@ -48,7 +48,6 @@ export const Dataset = () => {
     const previousQuery = useRef<{ filters: typeof filters; page: number } | null>(null);
 
     const highlightChange = useCallback((id: number, status: TicketStatus) => {
-        // The PATCH response and its SSE notification describe the same update.
         if (highlightedStatuses.current.get(id) === status) return;
         highlightedStatuses.current.set(id, status);
         const version = ++highlightVersion.current;
@@ -88,7 +87,6 @@ export const Dataset = () => {
             await api.patch<{ data: Ticket }>(`tickets/${params.id}`, body, { signal: controller.signal });
             if (!controller.signal.aborted) {
                 if (tickets.find((ticket) => ticket.id === id)?.status !== status) highlightChange(id, status);
-                // Also reload if SSE is temporarily unavailable or status was unchanged.
                 setRefreshVersion((version) => version + 1);
             }
         } catch (cause) {
@@ -108,7 +106,6 @@ export const Dataset = () => {
     useEffect(() => {
         let refreshTimer: ReturnType<typeof setTimeout> | undefined;
         const refresh = () => {
-            // Combine a burst of notifications without postponing refresh forever.
             if (refreshTimer !== undefined) return;
             refreshTimer = setTimeout(() => {
                 refreshTimer = undefined;
@@ -161,7 +158,6 @@ export const Dataset = () => {
                     }
                     setPagination(message.pagination);
                     if (refreshing) {
-                        // Retain row nodes and highlight only the changed ticket.
                         setTickets(message.items);
                         continue;
                     }

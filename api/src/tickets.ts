@@ -4,7 +4,6 @@ import { newTicketSchema, ticketParamsSchema, updateTicketSchema, ticketsQuerySc
 import type { FastifyPluginAsync } from "fastify";
 import { pg } from "./db.ts";
 
-
 export const ticketsRoutes: FastifyPluginAsync =
     async (api) => {
 
@@ -43,7 +42,6 @@ export const ticketsRoutes: FastifyPluginAsync =
             );
             if (!ticket) return rep.code(404).send({ message: "הפנייה לא נמצאה" });
 
-            // PostgreSQL's trigger publishes the notification after commit.
             return rep.ok(ticket);
         });
 

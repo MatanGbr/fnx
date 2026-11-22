@@ -7,6 +7,17 @@ By default the API connects to `pg.matang.app:5432`, database `fnx`, user
 use this configuration. TLS verifies the server hostname and the public
 certificate bundled in `src/db-certificate.ts`.
 
+On the hosted server, `fnx` can connect only to database `fnx` and can select,
+insert, update, and delete rows in the existing `public.tickets` table. The
+non-login role `fnx_owner` owns the database and its objects. The application
+role cannot create or alter objects, drop tables or databases, truncate tables,
+grant access, or assume an administrative role. Schema changes require an
+administrator; these restrictions are separate from the local Docker setup.
+
+`ssh fnx@pg.matang.app` opens a confined psql session; a command such as
+`ssh fnx@pg.matang.app '\dt'` runs directly. Shell escapes, program pipes, and
+writing files from that session are blocked.
+
 Run `npm run dev --workspace=api` to use this database. `PGHOST`, `PGPORT`,
 `PGDATABASE`, `PGUSER`, and `PGPASSWORD` can override the defaults; the Docker
 Compose configuration continues to use its local database. Remove any old
@@ -21,7 +32,7 @@ Frontend production builds use `https://api.fnx.matang.app`; development uses
 
 ## Docker
 
-For a database preloaded with the existing tables and all 26 tickets, run
+For a database preloaded with the existing tables and all 25 tickets, run
 `docker compose up -d --wait db` from the repository root. To include the API,
 run `docker compose --profile api up -d --build --wait`.
 See [database setup](sql/README.md) for connection details and the equivalent

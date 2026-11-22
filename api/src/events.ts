@@ -11,7 +11,6 @@ export const ticketEventsRoutes: FastifyPluginAsync = async (api) => {
 
     const write = (stream: PassThrough, message: string) => {
         if (!stream.destroyed && !stream.writableEnded && !stream.write(message)) {
-            // A slow consumer reconnects and reloads rather than growing a queue.
             stream.destroy();
         }
     };
@@ -29,7 +28,6 @@ export const ticketEventsRoutes: FastifyPluginAsync = async (api) => {
                 listening = true;
                 lastVerified = Date.now();
                 broadcast("heartbeat", health());
-                // Reload after LISTEN is active, including updates missed offline.
                 broadcast("resync", {});
             },
             onHeartbeat: () => {
@@ -53,7 +51,6 @@ export const ticketEventsRoutes: FastifyPluginAsync = async (api) => {
     api.get("/events/tickets", { handlerTimeout: 65_000, config: { streaming: true } }, async (_req, rep) => {
         const streamer = new PassThrough();
         const heartbeat = setInterval(() => send(streamer, "heartbeat", health()), 15_000);
-        // Bound each request; EventSource reconnects automatically.
         const lifetime = setTimeout(() => streamer.end(), 60_000);
         const cleanup = () => {
             clearInterval(heartbeat);

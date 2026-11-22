@@ -3,7 +3,6 @@ import { readFile } from "node:fs/promises";
 import { Writable } from "node:stream";
 import { test } from "node:test";
 
-// Simulate only AWS's runtime wrapper; the bundled adapter and routes are real.
 globalThis.awslambda = {
   streamifyResponse: (handler) => handler,
   HttpResponseStream: {

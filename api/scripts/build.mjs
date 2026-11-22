@@ -10,7 +10,6 @@ await build({
   platform: "node",
   target: "node22",
   format: "esm",
-  // Bundled CommonJS dependencies still require Node built-ins at runtime.
   banner: {
     js: 'import { createRequire } from "node:module"; const require = createRequire(import.meta.url);',
   },

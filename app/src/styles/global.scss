@@ -1,0 +1,29 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    color: #0f172a;
+    font-family: "Noto Sans Hebrew", sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+
+:root {
+    --accent: #c2510b;
+    --accent-hover: #a84108;
+    --accent-active: #873306;
+    --accent-soft: #fff1e7;
+    --accent-soft-active: #ffdfc5;
+    --accent-border: #efba94;
+    --surface: #fffdfb;
+    --surface-muted: #f3f0ed;
+    --surface-header: #ede8e3;
+    --surface-border: #dcd3cb;
+}

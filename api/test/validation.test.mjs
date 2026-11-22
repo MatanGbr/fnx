@@ -40,7 +40,6 @@ test("backend schemas are eagerly compiled and preserve shared validation result
 });
 
 test("frontend compiles lazily once and agrees with backend schemas", async () => {
-    // An isolated browser bundle keeps zod/compile's global hook out of the server tests.
     const bundle = await build({
         entryPoints: [new URL("../../app/src/validation.ts", import.meta.url).pathname],
         bundle: true, write: false, format: "esm", platform: "browser",

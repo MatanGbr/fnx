@@ -19,7 +19,7 @@
 **External services**
 * **PostgreSQL**
 <br/> Primary database
-<br/> **` ssh fnx@db.matang.app `**
+<br/> **` ssh fnx@pg.matang.app `**
 
 **Run it yourself!**
 ```
@@ -39,10 +39,10 @@ These broadcasting methods are natively supported and communicate with Fastify, 
 
 Zustand is the tiny state-manager that handles our front-end application's state. Sass modules keep the style scooped, and Vite packages them neatly for production. While the server can operate or be packaged using any JavaScript package manager (npm, pnpm, deno or bun), you can also start it as a containrized Docker image.
 
-The database is optimized and indexed for... If you don't want to connect with my database, you can either run the SQL files in your own database, or just run the PG Docker container.
+The database is indexed for retrieving tickets in newest-first order. A composite index on `(created_at DESC, id DESC)` supports sorting and provides consistent ordering when multiple tickets share the same creation timestamp. If you don't want to connect with my database, you can either run the SQL files in your own database, or just run the PG Docker container.
 
 
-#### How I deployed it?
+#### How I deployed it
 
 
 ```mermaid
@@ -82,3 +82,4 @@ s3["S3  Bucket<br/> <span  style='font-size:smaller'> Storage  Distribution </sp
 app["React  App<br/> <span  style='font-size:smaller'> Web  Application </span>"]
 ```
 
+#### Any feedback? [matangbr@gmail.com](mailto:matangbr@gmail.com)

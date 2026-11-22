@@ -20,7 +20,7 @@
     line-height: 1.5;
 
     &:hover:not(:disabled) { border-color: #8795a6; }
-    &:focus-visible { outline: 2px solid #009b83; outline-offset: 2px; border-color: #009b83; }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
     &:disabled { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; }
     &[aria-invalid="true"] { border-color: #b91c1c; }
 }

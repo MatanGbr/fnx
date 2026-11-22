@@ -1,5 +1,3 @@
-// Public server certificate for pg.matang.app; contains no private key.
-// Renew the server certificate and this trust anchor together before expiry.
 export const databaseCertificate = `-----BEGIN CERTIFICATE-----
 MIIEPzCCAqegAwIBAgIUKj4JrfSpSvCnpH0XcfOff6SqSTkwDQYJKoZIhvcNAQEL
 BQAwGDEWMBQGA1UEAwwNcGcubWF0YW5nLmFwcDAeFw0yNjExMjIxNTU5MjNaFw0y

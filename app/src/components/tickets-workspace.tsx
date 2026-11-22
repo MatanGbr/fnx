@@ -7,7 +7,7 @@ import clsx from "clsx";
 
 const MIN_FORM_WIDTH = 240;
 const MIN_DATASET_WIDTH = 320;
-const DIVIDER_SPACE = 24; // 8px divider and two 8px gaps.
+const DIVIDER_SPACE = 24;
 
 export const TicketsWorkspace = () => {
     const container = useRef<HTMLDivElement>(null);
@@ -39,7 +39,6 @@ export const TicketsWorkspace = () => {
 
     const moveDrag = (event: PointerEvent<HTMLDivElement>) => {
         if (drag.current?.pointerId !== event.pointerId) return;
-        // The form is on the right in RTL: moving left increases its width.
         setPreferredWidth(clamp(drag.current.width + drag.current.x - event.clientX));
     };
 

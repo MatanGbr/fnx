@@ -80,7 +80,6 @@ export const NewItem = () => {
             );
             if (controller.signal.aborted) return;
             reset();
-            // A new filters object also reloads Dataset when already on page one.
             applyFilters({ search: "", status: "" });
             setSuccess(`פנייה ${data.id} נוצרה בהצלחה.`);
         } catch (cause) {

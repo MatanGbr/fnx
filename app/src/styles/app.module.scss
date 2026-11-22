@@ -11,8 +11,8 @@
 
 .app-shell.app-shell {
     flex-direction: column;
-    background: #eff3f5;
-    border-color: #d5e1e8;
+    background: var(--surface-muted);
+    border-color: var(--surface-border);
     border-radius: 16px;
     flex: 1;
     min-width: 0;

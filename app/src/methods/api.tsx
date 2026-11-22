@@ -7,8 +7,6 @@ export { WRITE_TIMEOUT_MESSAGE } from "../../../shared/timeouts";
 const baseUrl = import.meta.env.VITE_API_URL
     ?? (import.meta.env.PROD ? "https://api.fnx.matang.app" : "http://localhost:3000");
 
-
-
 type Options = {
     stream?: boolean;
     timeoutMs?: number;
@@ -75,7 +73,6 @@ async function request<T>(
     } catch (error) {
         throw combined.aborted ? combined.reason : error;
     } finally {
-        // Streaming requests own the deadline until the body is read or cancelled.
         if (!streaming) clearTimeout(timer);
     }
 }
@@ -154,10 +151,9 @@ const events = (
             const value = result.data;
             lastHeartbeat = Date.now();
             report(value.healthy ? "connected" : "unavailable");
-        } catch { /* Malformed messages cannot confirm connectivity. */ }
+        } catch {}
     };
     const handleError = (event: Event) => {
-        // A previous heartbeat cannot confirm a connection that has failed.
         report("unavailable");
         onError?.(event);
     };

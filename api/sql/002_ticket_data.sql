@@ -1,5 +1,3 @@
--- Snapshot of all 26 local fnx tickets on 2026-11-22, including original IDs and timestamps.
--- Run once after 000_schema.sql and 001_ticket_status_notifications.sql.
 BEGIN;
 SET LOCAL standard_conforming_strings = on;
 
@@ -28,10 +26,7 @@ INSERT INTO public.tickets (id, title, description, status, created_at) VALUES
     (122, 'בירור זמינות', 'מעוניין לדעת מתי המוצר יחזור למלאי', 'in_progress', '2026-11-11 14:20:00+02'),
     (123, 'חשבונית שגויה', 'הסכום בחשבונית אינו תואם לסכום ששולם', 'closed', '2026-11-10 11:15:00+02'),
     (124, 'בקשה למשלוח מהיר', 'האם ניתן לשדרג את המשלוח למשלוח מהיר?', 'open', '2026-11-09 16:45:00+02'),
-    (125, 'בעיה בעדכון פרטים', '', 'in_progress', '2026-11-08 08:00:00+02'),
-    (132, 'ttt', 'ttt', 'open', '2026-11-22 17:08:22.338872+02');
-
--- Preserve the exported identity sequence so the next generated ID is 133.
+    (125, 'בעיה בעדכון פרטים', '', 'in_progress', '2026-11-08 08:00:00+02');
 SELECT pg_catalog.setval('public.tickets_id_seq', 132, true);
 
 COMMIT;

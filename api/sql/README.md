@@ -4,7 +4,7 @@ Both installation paths use these same UTF-8 SQL files, in order:
 
 1. `000_schema.sql`: tickets table, identity sequence, constraints, and index.
 2. `001_ticket_status_notifications.sql`: status notification function and trigger.
-3. `002_ticket_data.sql`: all 26 records exported from the local `fnx` database on
+3. `002_ticket_data.sql`: 25 records exported from the local `fnx` database on
    2026-11-22, preserving IDs, timestamps, statuses, and sequence state (next ID: 133).
 
 Use PostgreSQL 18 to match the source database and Docker image. These are plain
@@ -20,7 +20,7 @@ docker compose up -d --wait db
 docker compose exec db psql -U fnx -d fnx -c 'SELECT count(*) FROM public.tickets;'
 ```
 
-The expected count is 26. Connect at `127.0.0.1:5433`, database/user `fnx`,
+The expected count is 25. Connect at `127.0.0.1:5433`, database/user `fnx`,
 password `fnx-local`. Port 5433 avoids colliding with a local PostgreSQL server.
 Override with `FNX_DB_PORT` and `FNX_DB_PASSWORD` before starting the stack.
 The default password is for local development.

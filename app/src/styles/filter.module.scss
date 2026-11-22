@@ -37,7 +37,8 @@ button.search-field__clear {
     background: transparent;
     color: #64748b;
     > svg { display: block; }
-    &:hover:not(:disabled) { background: #e7f6f2; color: #008b76; }
+    &:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
+    &:active:not(:disabled) { background: var(--accent-soft-active); color: var(--accent-active); }
 }
 @keyframes search-clear {
     from { color: #0f172a; }

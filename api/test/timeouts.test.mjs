@@ -52,7 +52,6 @@ test("client deadlines cover headers, JSON bodies and streams, preserve caller c
     const originalFetch = globalThis.fetch;
     let lastSignal;
     const timeout = { timeoutMs: 15 };
-    // Mock the transport, including fetch's cancellation of response bodies.
     const stall = (_url, { signal }) => {
         lastSignal = signal;
         return new Promise((_resolve, reject) => {

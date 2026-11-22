@@ -1,9 +1,9 @@
 .dataset {
     box-sizing: border-box;
     padding: 12px;
-    border: 1px solid #cbd2dc;
+    border: 1px solid var(--surface-border);
     border-radius: 4px;
-    background: #fff;
+    background: var(--surface);
     display: flex;
     flex-direction: column;
     flex: 1 1 0;
@@ -32,13 +32,13 @@
         position: sticky;
         top: 0;
         z-index: 1;
-        background: #e9edf1;
+        background: var(--surface-header);
     }
     tbody tr { animation: ticket-appear 180ms ease-out both; }
 }
 
 .tickets-pagination {
-    > span { color: #008b76; }
+    > span { color: var(--accent); }
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -52,26 +52,26 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-// Alternate names restart the pulse if the same row changes again quickly.
 @each $variant in 0, 1 {
     .tickets-table .ticket-updated-#{$variant} td {
         animation: ticket-status-pulse-#{$variant} 2400ms ease-out;
     }
     @keyframes ticket-status-pulse-#{$variant} {
-        0%, 25% { background-color: #dcfce7; }
+        0%, 25% { background-color: var(--accent-soft-active); }
         100% { background-color: transparent; }
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .tickets-table tbody tr { animation: none; }
-    .tickets-table .ticket-updated td { animation: none; background-color: #dcfce7; }
+    .tickets-table .ticket-updated td { animation: none; background-color: var(--accent-soft-active); }
 }
 
 .tickets-pagination button {
     min-height: 30px;
     padding: 3px 18px;
     background: #fff;
-    color: #008b76;
-    &:hover:not(:disabled) { background: #e7f6f2; }
+    color: var(--accent);
+    &:hover:not(:disabled) { background: var(--accent-soft); }
+    &:active:not(:disabled) { background: var(--accent-soft-active); color: var(--accent-active); }
 }
