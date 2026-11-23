@@ -152,7 +152,7 @@ const events = (
             const value = result.data;
             lastHeartbeat = Date.now();
             report(value.healthy ? "connected" : "unavailable");
-        } catch {}
+        } catch { }
     };
     const handleError = (event: Event) => {
         report("unavailable");

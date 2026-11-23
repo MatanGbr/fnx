@@ -1,4 +1,6 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import clsx from "clsx";
+
 import { Icon } from "./ui/icon";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -7,10 +9,9 @@ import { Title } from "./ui/title";
 import { api, ApiError, ApiTimeoutError, WRITE_TIMEOUT_MESSAGE } from "../methods/api";
 import { useTicketDraft } from "../stores/ticket-draft";
 import { useTicketsFilter } from "../stores/tickets-filter";
-import styles from "../styles/new-item.module.scss";
-import clsx from "clsx";
-
 import { newTicketSchema } from "../validation";
+
+import styles from "../styles/new-item.module.scss";
 
 type FieldErrors = { title?: string; description?: string };
 

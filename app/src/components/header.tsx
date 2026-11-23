@@ -1,4 +1,3 @@
-import { Card } from "./ui/card";
 import { Title } from "./ui/title";
 
 export const Header = () => {

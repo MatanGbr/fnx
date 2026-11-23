@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: fnx
       POSTGRES_PASSWORD: ${FNX_DB_PASSWORD:-fnx-local}
     ports:
-      - "127.0.0.1:${FNX_DB_PORT:-5433}:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
       - ./api/sql:/docker-entrypoint-initdb.d:ro

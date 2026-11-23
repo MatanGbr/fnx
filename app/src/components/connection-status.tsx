@@ -1,13 +1,16 @@
+import clsx from "clsx";
+
 import { Card } from "./ui/card";
 import { useConnection } from "../stores/connection";
+
 import styles from "../styles/connection-status.module.scss";
-import clsx from "clsx";
+
 
 const labels = {
     checking: "בודק חיבור לנתונים…",
     connected: "החיבור לנתונים פעיל",
-    offline: "אין חיבור לאינטרנט. בדקו את חיבור הרשת שלכם.",
-    unavailable: "החיבור לנתונים אינו זמין. ייתכן שהמידע אינו עדכני. מנסה להתחבר מחדש…",
+    offline: "אין חיבור לאינטרנט.",
+    unavailable: "אין חיבור לנתונים",
 };
 
 export const ConnectionStatus = () => {

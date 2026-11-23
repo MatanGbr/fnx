@@ -100,7 +100,7 @@ export const Select = ({ children, value, onValueChange, disabled, name, id, cla
             aria-haspopup="listbox" aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
             disabled={disabled} onKeyDown={onKeyDown} onBlur={() => setPosition(null)}
             onClick={() => open ? setPosition(null) : show()}>
-            <span>{options[selected]?.label ?? "בחרו אפשרות"}</span>
+            <span>{options[selected]?.label ?? "אפשרות"}</span>
             <svg aria-hidden="true" viewBox="0 0 16 16" className={clsx(open && styles["is-open"])}>
                 <path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

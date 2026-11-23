@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactNode } from "react";
 import styles from "../../styles/card.module.scss";
 import clsx from "clsx";
 

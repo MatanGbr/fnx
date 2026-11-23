@@ -70,10 +70,10 @@ export const TicketsWorkspace = () => {
                 style={{ gridTemplateColumns: `${width}px 8px minmax(0, 1fr)` }}>
                 <div id="new-ticket-panel" className={styles["new-ticket-panel"]}><NewItem /></div>
                 <div className={styles["tickets-divider"]} role="separator" tabIndex={0}
-                    aria-label="שינוי רוחב חלונית פנייה חדשה" aria-orientation="vertical"
+                    aria-label="שינוי רוחב חלונית" aria-orientation="vertical"
                     aria-controls="new-ticket-panel" aria-valuemin={MIN_FORM_WIDTH}
                     aria-valuemax={Math.round(maxWidth)} aria-valuenow={Math.round(width)}
-                    aria-valuetext={`${Math.round(width)} פיקסלים`}
+                    aria-valuetext={`${Math.round(width)}px`}
                     onPointerDown={startDrag} onPointerMove={moveDrag}
                     onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag}
                     onKeyDown={resizeWithKeyboard} />

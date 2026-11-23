@@ -1,5 +1,6 @@
 FROM node:24-bookworm-slim AS build
 WORKDIR /app
+RUN npm install --global esbuild@0.28.2
 
 COPY package.json package-lock.json ./
 COPY api/package.json ./api/package.json
@@ -8,10 +9,12 @@ COPY app/package.json ./app/package.json
 RUN npm ci --workspace=api --workspace=shared --include-workspace-root=false
 
 COPY tsconfig.json ./
-COPY api/scripts ./api/scripts
 COPY api/src ./api/src
 COPY shared ./shared
-RUN npm run build --workspace=api
+RUN esbuild api/src/server.ts \
+    --bundle --platform=node --target=node24 --format=esm \
+    --banner:js='import { createRequire } from "node:module"; const require = createRequire(import.meta.url);' \
+    --outfile=api/dist/server.mjs
 
 FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production

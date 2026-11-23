@@ -8,11 +8,13 @@
 <br/> [fnx.matang.app](https://fnx.matang.app)
 
 
-
 * `@fnx/api`
 <br/> Back-end Fastify API server 
 <br/> **` curl api.fnx.matang.app`**
 
+
+* `@fnx/shared`
+<br/> For shared validations
 
 **External services**
 * **PostgreSQL**
@@ -29,33 +31,22 @@ npm install &&
 npm run dev
 ```
 
-`LOCAL_API=true` makes the frontend use `http://localhost:3000`. Otherwise it
-uses the production API. The local API uses the production database by default.
-
-If you also want a local database, run these before `npm run dev`:
+If you also want a local database:
 
 ```sh
-export LOCAL_DB=true
+export LOCAL_DB=true && export FNX_DB_PASSWORD=fnx-local
 docker compose up -d --wait db
+npm run dev
 ```
 
-To run the API in a container instead of `npm run dev:api`:
+Or to run the API in a container:
 
 ```sh
 docker compose --profile api up -d --build --wait api
 npm run dev:app
 ```
 
-The container also respects `LOCAL_DB=true`; otherwise it uses production.
-Both flags accept the exact value `true` to enable local services. Set them to
-`false` or unset them to use production. You can also put them in a root `.env`
-file. Restart dev servers after changing them; rebuild the frontend when
-changing `LOCAL_API` for a production build.
-
-See [API environment configuration](api/README.md#environment-selection) for
-custom API URLs, database credentials, and standalone Docker commands.
-
-**Worth knowing**
+**About this project**
 
 
 The system displays tickets streamed into it upon launch, creating a new ticket, or using the search bar (which can filter the results by status). The search bar enables keyboard-only usage (`Tab` focuses, `Esc` cleans, and `Enter` submits) and saves your last search query locally (just like it saves your unfinished ticket values if you accidently closed the tab). It can even tolerate typos thanks to Fuse.js
