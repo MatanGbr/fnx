@@ -43,7 +43,7 @@ export const Select = ({ children, value, onValueChange, disabled, name, id, cla
     const choose = (index: number) => {
         const option = options[index];
         if (!option || option.disabled) return;
-        onValueChange(option.value);
+        if (option.value !== value) onValueChange(option.value);
         setPosition(null);
         trigger.current?.focus();
     };

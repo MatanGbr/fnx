@@ -77,6 +77,7 @@ export const Dataset = () => {
 
     const updateStatus = async (id: number, status: TicketStatus) => {
         if (updates.current.has(id)) return;
+        if (tickets.find((ticket) => ticket.id === id)?.status === status) return;
         const controller = new AbortController();
         updates.current.set(id, controller);
         setPendingStatuses((current) => ({ ...current, [id]: status }));
